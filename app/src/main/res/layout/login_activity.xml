@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+            android:id="@+id/h5_test_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <TextView
+                    android:id="@+id/status_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/status_bar_height"
+                    android:background="@color/status_bar_color"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="请输入测试地址，注意localhost替换为实际IP"
+                    android:gravity="center"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="eg:http://192.168.2.103:8080/views/test/android/main-view.html"
+                    android:gravity="center"/>
+            <EditText
+                    android:id="@+id/test_path"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"/>
+            <Button
+                    android:id="@+id/go_h5_test"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="进入测试页面"/>
+            <Button
+                    android:id="@+id/new_map_test"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="开启地图测试"/>
+            <Button
+                    android:id="@+id/push_test_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="添加推送测试数据"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">兴一物流</string>
+
+    <string name="cancle">取消</string>
+    <string name="title">请选择时间</string>
+    <string name="commit">确定</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="hour">时</string>
+    <string name="minute">分</string>
+    <string name="select_date">选择日期</string>
+    <string name="current_date">当前日期</string>
+    <string name="select_time">选择时间</string>
+    <string name="current_time">当前时间</string>
+
+    <string name="errcode_success">发送成功</string>
+    <string name="errcode_cancel">发送取消</string>
+    <string name="errcode_deny">发送被拒绝</string>
+    <string name="errcode_unsupported">不支持错误</string>
+    <string name="errcode_unknown">发送返回</string>
+
+    <!--//待审核，待执行，待签收，已签收，已完成，已关闭-->
+    <!--public static class OrderState {-->
+    <!--public static final int AUDIT = 1;-->
+    <!--public static final int EXECUTE = 2;-->
+    <!--public static final int NOT_SIGN = 3;-->
+    <!--public static final int SIGNED = 4;-->
+    <!--public static final int COMPLETE = 5;-->
+    <!--public static final int CLOSED = 6;-->
+    <!--}-->
+
+    <string name="order_state_audit">待审核</string>
+    <string name="order_state_execute">待执行</string>
+    <string name="order_state_not_sign">待签收</string>
+    <string name="order_state_sign">已签收</string>
+    <string name="order_state_complete">已完成</string>
+    <string name="order_state_closed">已关闭</string>
+
+</resources>
