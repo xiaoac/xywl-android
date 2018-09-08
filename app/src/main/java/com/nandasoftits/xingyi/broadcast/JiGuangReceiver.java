@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import cn.jpush.android.api.JPushInterface;
-import com.nandasoftits.xingyi.activity.H5Activity;
 import com.nandasoftits.xingyi.utils.ActivityJumpHelper;
 import com.nandasoftits.xingyi.utils.Constant;
 import com.nandasoftits.xingyi.utils.Logger;

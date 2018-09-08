@@ -16,10 +16,8 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.*;
 import android.widget.Toast;
 import com.baidu.location.BDLocation;
@@ -195,14 +193,6 @@ public class H5Activity extends BasicActivity {
         String token = UserSharedPreferences.getMsg(H5Activity.this,UserSharedPreferences.SPHelp.USER_TAG);
 
         if(mUseToken && !TextUtils.isEmpty(token)) {
-
-            /*public void testLoadURLWithHTTPHeaders() {
-                final String url = "http://droidyue.com";
-                WebView webView = new WebView(getActivity());
-                Map<String,String> extraHeaders = new HashMap<String, String>();
-                extraHeaders.put("Referer", "http://www.google.com");
-                webView.loadUrl(url, extraHeaders);
-            }*/
             Map<String,String> extraHeaders = new HashMap<String, String>();
             extraHeaders.put("token", token);
             mWebView.loadUrl(mPath, extraHeaders);

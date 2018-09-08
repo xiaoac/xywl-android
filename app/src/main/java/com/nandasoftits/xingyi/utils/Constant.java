@@ -39,4 +39,12 @@ public class Constant {
     public static final String WX_APPID = "wx716e867a8dfc27bb";
 
     public static final String APP_PAGENAME = "com.nandasoftits.xingyi";
+
+    public static final String TIPS_APP_NAME = "TIPS_APP_NAME";
+
+    public static final String TIPS_TITLE = "TIPS_TITLE";
+
+    public static final String TIPS_MSG = "TIPS_MSG";
+
+
 }

@@ -30,7 +30,7 @@ public class ActivityJumpHelper {
 
     public static void goH5ActivityWithToken(Context context, String url) {
         Intent intent = new Intent(context, H5Activity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Constant.TARGET_PATH, url);
         intent.putExtra(Constant.USE_TOKEN, true);
         context.startActivity(intent);

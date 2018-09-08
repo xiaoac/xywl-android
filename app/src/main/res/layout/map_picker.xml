@@ -54,7 +54,6 @@
                 android:id="@+id/my_location"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@mipmap/my_location"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="40dp"
