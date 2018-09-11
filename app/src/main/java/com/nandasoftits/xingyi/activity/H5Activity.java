@@ -69,12 +69,15 @@ public class H5Activity extends BasicActivity {
 
     private boolean mUseToken;
 
+    private Handler mHandle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.h5_activity);
         mWebView = findViewById(R.id.main_web_view);
 
+        mHandle = new Handler();
         Intent intent = getIntent();
         if (intent != null) {
             mPath = intent.getStringExtra(Constant.TARGET_PATH);
@@ -526,19 +529,19 @@ public class H5Activity extends BasicActivity {
         @JavascriptInterface
         public void getUserId(String methodName) {
             String retString = UserSharedPreferences.getMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_TAG);
-            mWebView.loadUrl("javascript: " + methodName + "('" + retString + "')");
+            doJSFunction(methodName,retString);
         }
 
         @JavascriptInterface
         public void getUserGroup(String methodName) {
             String retString = UserSharedPreferences.getMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_GROUP);
-            mWebView.loadUrl("javascript: " + methodName + "('" + retString + "')");
+            doJSFunction(methodName,retString);
         }
 
         @JavascriptInterface
         public void getUserMsg(String methodName) {
             String retString = UserSharedPreferences.getMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_MSG);
-            mWebView.loadUrl("javascript: " + methodName + "('" + retString + "')");
+            doJSFunction(methodName,retString);
         }
 
         @JavascriptInterface
@@ -618,6 +621,18 @@ public class H5Activity extends BasicActivity {
                 }
             });
         }
+    }
+
+    private void doJSFunction(final String functionName, final String param){
+        if(mHandle == null ||mWebView == null){
+            return;
+        }
+        mHandle.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mWebView.loadUrl("javascript:" + functionName + "('" + param + "')");
+            }
+        },500);
     }
 
     private class MyBDLocationListener implements BDLocationListener {
