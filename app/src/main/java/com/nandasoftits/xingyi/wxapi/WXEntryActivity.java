@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.Toast;
 import com.nandasoftits.xingyi.XywlApplication;
-import com.nandasoftits.xingyi.activity.BasicActivity;
 import com.nandasoftits.xingyi.activity.H5Activity;
 import com.nandasoftits.xingyi.activity.WeChatActivity;
 import com.nandasoftits.xingyi.utils.ActivityJumpHelper;
@@ -16,7 +15,7 @@ import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 
-public class WXEntryActivity extends BasicActivity implements IWXAPIEventHandler {
+public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     private static final String LOG_TAG = "WXEntryActivity";
 
@@ -25,6 +24,10 @@ public class WXEntryActivity extends BasicActivity implements IWXAPIEventHandler
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //透明状态栏
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //透明导航栏
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         super.onCreate(savedInstanceState);
         Logger.d(LOG_TAG, "onCreate");
         XywlApplication.mWxApi.handleIntent(getIntent(), this);

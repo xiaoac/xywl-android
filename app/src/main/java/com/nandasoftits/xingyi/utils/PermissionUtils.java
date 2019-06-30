@@ -48,10 +48,8 @@ public class PermissionUtils {
     public static boolean checkInternetPermission(Context context) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
-            Logger.d(LOG_TAG,"no internet permission! return false");
             return false;
         } else {
-            Logger.d(LOG_TAG,"have internet permission! return true");
             return true;
         }
     }

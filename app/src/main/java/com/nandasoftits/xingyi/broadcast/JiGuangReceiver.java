@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import cn.jpush.android.api.JPushInterface;
+import com.nandasoftits.xingyi.activity.H5Activity;
 import com.nandasoftits.xingyi.utils.ActivityJumpHelper;
-import com.nandasoftits.xingyi.utils.Constant;
 import com.nandasoftits.xingyi.utils.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,11 +58,10 @@ public class JiGuangReceiver extends BroadcastReceiver {
         try {
             JSONObject job = new JSONObject(extra);
             String url = job.getString("ANDROID_EXTRA");
-            ActivityJumpHelper.goH5ActivityWithToken(context, url);
+            ActivityJumpHelper.goH5Activity(context, url);
         } catch (JSONException e) {
             e.printStackTrace();
-            //NEWS_LIST_PATH_URL
-            ActivityJumpHelper.goH5ActivityWithToken(context, Constant.NEWS_LIST_PATH_URL);
+            ActivityJumpHelper.goWelcomeActivity(context);
         }
     }
 

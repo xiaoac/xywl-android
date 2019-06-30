@@ -29,7 +29,7 @@ public class JPushActivateService extends Service {
         Logger.d(LOG_TAG, "onStartCommand");
         if (Build.VERSION.SDK_INT < 18) {
             startForeground(GRAY_SERVICE_ID, new Notification());//API < 18 ，此方法能有效隐藏Notification上的图标
-            PushUtils.initJPush(this.getApplicationContext());
+            PushUtils.initTestJPush(this.getApplicationContext());
         } else {
             Intent innerIntent = new Intent(this, GrayInnerService.class);
             startService(innerIntent);

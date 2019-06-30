@@ -22,29 +22,13 @@ public class Constant {
 
     public static final String BASE_URL = "http://xingyi.nandasoft-its.com:8080";
 
-    public static final String DEV_PATH_URL = "http://xingyi.nandasoft-its.com/XYApp/index.html";
-
-    public static final String NEWS_LIST_PATH_URL = "http://xingyi.nandasoft-its.com/XYApp/myNewsList.html";
-
-    public static final String PRD_PATH_URL = "http://xingyi.nandasoft-its.com:8001/XYapp/index.html";
-
     public static final String UP_FILE_RUL = "/xyl/file/upfile";
 
     public static final String TARGET_PATH = "TARGET_PATH";
-
-    public static final String USE_TOKEN = "USE_TOKEN";
 
     public static final String ERROR_PAGE = "file:///android_asset/error.html";
 
     public static final String WX_APPID = "wx716e867a8dfc27bb";
 
     public static final String APP_PAGENAME = "com.nandasoftits.xingyi";
-
-    public static final String TIPS_APP_NAME = "TIPS_APP_NAME";
-
-    public static final String TIPS_TITLE = "TIPS_TITLE";
-
-    public static final String TIPS_MSG = "TIPS_MSG";
-
-
 }

@@ -1,21 +1,18 @@
 package com.nandasoftits.xingyi.activity;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.*;
@@ -33,11 +30,12 @@ import com.nandasoftits.xingyi.view.ImgSelectPicker;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static com.nandasoftits.xingyi.view.ImgSelectPicker.PICK_PHOTO;
 import static com.nandasoftits.xingyi.view.ImgSelectPicker.TACK_PHOTO;
@@ -46,9 +44,14 @@ public class H5Activity extends BasicActivity {
 
     private static final String LOG_TAG = "H5Activity";
 
+    //TODO Test
+    private static final String DEFAULT_PATH = "http://192.168.2.103:8080/views/test/android/main-view.html";
+
     private WebView mWebView;
 
     private ImgSelectPicker mImgSelectPicker;
+
+    private ValueCallback<Uri[]> mMultiFileCallback;
 
     private ValueCallback<Uri> mUploadMessage;
 
@@ -63,25 +66,15 @@ public class H5Activity extends BasicActivity {
 
     public static String WXCdoe = "";
 
-    public String doWXCompleteMethodName = "";
-
-    private String mImgPath;
-
-    private boolean mUseToken;
-
-    private Handler mHandle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.h5_activity);
         mWebView = findViewById(R.id.main_web_view);
 
-        mHandle = new Handler();
         Intent intent = getIntent();
         if (intent != null) {
             mPath = intent.getStringExtra(Constant.TARGET_PATH);
-            mUseToken = intent.getBooleanExtra(Constant.USE_TOKEN,false);
         }
         if (TextUtils.isEmpty(mPath)) {
             mPath = UserSharedPreferences.getMsg(this, "TEST_PATH");
@@ -99,57 +92,20 @@ public class H5Activity extends BasicActivity {
             public void doSelect(String imgTag, int select) {
                 switch (select) {
                     case TACK_PHOTO:
-                        // 获取SD卡路径
-                        mImgPath = Environment.getExternalStorageDirectory().getPath();
-
-                        SimpleDateFormat t = new SimpleDateFormat("yyyyMMddssSSS");
-                        String filename = "MT" + (t.format(new Date())) + ".png";
-
-                        // 保存图片的文件名
-                        mImgPath = mImgPath + "/" + filename;
-
-                        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
-                            takePhotoBiggerThan7((new File(mImgPath)).getAbsolutePath());
-                        }else {
-                            // 指定拍照意图
-                            Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            // 加载路径图片路径
-                            Uri mUri = Uri.fromFile(new File(mImgPath));
-                            // 指定存储路径，这样就可以保存原图了
-                            openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
-                            startActivityForResult(openCameraIntent, TACK_PHOTO);
-                        }
+                        Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); //系统常量， 启动相机的关键
+                        startActivityForResult(openCameraIntent, TACK_PHOTO); // 参数常量为自定义的request code, 在取返回结果时有用
                         break;
                     case PICK_PHOTO:
                         Intent intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(intent, PICK_PHOTO);
+
                         break;
                     default:
                 }
             }
         });
-    }
-
-    private void takePhotoBiggerThan7(String absolutePath) {
-        Uri mCameraTempUri;
-        try {
-            ContentValues values = new ContentValues(1);
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
-            values.put(MediaStore.Images.Media.DATA, absolutePath);
-            mCameraTempUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            if (mCameraTempUri != null) {
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraTempUri);
-                intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-            }
-            startActivityForResult(intent, TACK_PHOTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void initLocation() {
@@ -192,18 +148,8 @@ public class H5Activity extends BasicActivity {
         webSettings.setBuiltInZoomControls(true);
         //缓存模式设置
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-
-        String token = UserSharedPreferences.getMsg(H5Activity.this,UserSharedPreferences.SPHelp.USER_TAG);
-
-        if(mUseToken && !TextUtils.isEmpty(token)) {
-            Map<String,String> extraHeaders = new HashMap<String, String>();
-            extraHeaders.put("token", token);
-            mWebView.loadUrl(mPath, extraHeaders);
-        }else {
-            //加载需要显示的网页
-            mWebView.loadUrl(mPath);
-        }
-
+        //加载需要显示的网页
+        mWebView.loadUrl(mPath);
         //设置WebViewClient用来辅助WebView处理各种通知请求事件等，如更新历史记录、网页开始加载/完毕、报告错误信息等
         mWebView.setWebViewClient(new WebViewClient() {
 
@@ -256,14 +202,6 @@ public class H5Activity extends BasicActivity {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 loadError = true;
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                //handler.cancel(); 默认的处理方式，WebView变成空白页
-                handler.proceed();//接受证书
-
-                //handleMessage(Message msg); 其他处理
             }
         });
 
@@ -331,11 +269,7 @@ public class H5Activity extends BasicActivity {
     protected void onResume() {
         super.onResume();
         if (!TextUtils.isEmpty(WXCdoe) && mWebView != null) {
-            if (TextUtils.isEmpty(doWXCompleteMethodName)) {
-                Logger.d(LOG_TAG, "doWXCompleteMethodName is empty!");
-                return;
-            }
-            mWebView.loadUrl("javascript: " + doWXCompleteMethodName + "('" + WXCdoe + "')");
+            mWebView.loadUrl("javascript: doWXLoginComplete('" + WXCdoe + "')");
             WXCdoe = "";
         }
     }
@@ -343,61 +277,47 @@ public class H5Activity extends BasicActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Logger.d(LOG_TAG, "requestCode[" + requestCode + "]," + "resultCode[" + resultCode + "],");
+        Log.e(LOG_TAG, "requestCode[" + requestCode + "]," + "resultCode[" + resultCode + "],");
         if (resultCode != RESULT_OK) {
-            Logger.d(LOG_TAG, "RETURN ->" + resultCode);
+            Log.e(LOG_TAG, "RETURN ->" + resultCode);
             return;
         }
 
-        FileInputStream is = null;
-
+        if (data == null) {
+            Log.e(LOG_TAG, "RETURN -> data = null");
+            uploadImgFail();
+            return;
+        }
         try {
-            Bitmap relImg = null;
-            Bitmap endImg = null;
-            if(data != null){
-                Uri uri = data.getData();
-                Logger.d(LOG_TAG, "RETURN -> uri ->"+uri);
-                if(uri == null) {
-                    uploadImgFail();
-                    Logger.d(LOG_TAG, "RETURN -> uri = null");
-                    return;
-                }
-                //获取图库图片
-                relImg = MediaStore.Images.Media.getBitmap(H5Activity.this.getContentResolver(),uri);
-            } else {
-                //获取拍照图片
-                if (TextUtils.isEmpty(mImgPath) || !new File(mImgPath).exists()) {
-                    Logger.d(LOG_TAG, "RETURN -> mImgPath = null");
-                    uploadImgFail();
-                    return;
-                }
-                Logger.d(LOG_TAG, " -> 11111");
-                // 获取输入流
-                is = new FileInputStream(mImgPath);
-                // 把流解析成bitmap,此时就得到了清晰的原图
-                //接下来就可以展示了（或者做上传处理
-                relImg = BitmapFactory.decodeStream(is);
-                Logger.d(LOG_TAG, " -> 22222");
-                mImgPath = null;
-            }
-            Matrix matrix = new Matrix();
-            matrix.setScale(0.3f, 0.3f);
-            endImg = Bitmap.createBitmap(relImg, 0, 0, relImg.getWidth(), relImg.getHeight(), matrix, false);
-            if(relImg != null && !relImg.isRecycled()){
-                relImg.recycle();
-                relImg = null;
-            }
-            System.gc();
+            Uri uri = data.getData();
+            Bitmap bitmap = null;
+            if (uri != null) {
+                Bitmap image = null;
 
-            if (endImg == null) {
+                image = MediaStore.Images.Media.getBitmap(H5Activity.this.getContentResolver(), uri);
+
+                if (image != null) {
+                    Matrix matrix = new Matrix();
+                    matrix.setScale(0.5f, 0.5f);
+                    bitmap = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, false);
+                }
+            } else {
+                Bundle extras = data.getExtras();
+                if (extras != null) {
+                    //这里是有些拍照后的图片是直接存放到Bundle中的所以我们可以从这里面获取Bitmap图片
+                    bitmap = extras.getParcelable("data");
+                }
+            }
+
+            if (bitmap == null) {
                 uploadImgFail();
-                Logger.d(LOG_TAG, "RETURN -> bitmap = null");
+                Log.e(LOG_TAG, "RETURN -> bitmap = null");
                 return;
             }
 
             mWebView.loadUrl("javascript: showLoading('图片上传中...')");
 
-            final Bitmap fBitmap = endImg;
+            final Bitmap fBitmap = bitmap;
 
             new Thread(new Runnable() {
                 @Override
@@ -407,20 +327,12 @@ public class H5Activity extends BasicActivity {
             }).start();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(is != null){
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
     private void disposeImg(Bitmap bitmap) {
         //压缩图片
-        //bitmap = ImgUtils.bitmapCompress(bitmap);
+        bitmap = ImgUtils.bitmapCompress(bitmap);
 
         //保存图片
         FileOutputStream fileOutputStream = null;
@@ -480,7 +392,7 @@ public class H5Activity extends BasicActivity {
 
         Logger.d(LOG_TAG, "delete file -> " + picPath);
 
-//        TODO
+//
 //        File file = new File(picPath);
 //        if (file.exists() && file.isFile()) {
 //            file.delete();
@@ -523,31 +435,31 @@ public class H5Activity extends BasicActivity {
 
         @JavascriptInterface
         public void getLocation() {
+            //TODO
             H5Activity.this.getLocation();
         }
 
         @JavascriptInterface
-        public void getUserId(String methodName) {
+        public void getUserTag(String methodName) {
             String retString = UserSharedPreferences.getMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_TAG);
-            doJSFunction(methodName,retString);
+            mWebView.loadUrl("javascript: " + methodName + "('" + retString + "')");
         }
 
         @JavascriptInterface
         public void getUserGroup(String methodName) {
             String retString = UserSharedPreferences.getMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_GROUP);
-            doJSFunction(methodName,retString);
+            mWebView.loadUrl("javascript: " + methodName + "('" + retString + "')");
         }
 
         @JavascriptInterface
         public void getUserMsg(String methodName) {
             String retString = UserSharedPreferences.getMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_MSG);
-            doJSFunction(methodName,retString);
+            mWebView.loadUrl("javascript: " + methodName + "('" + retString + "')");
         }
 
         @JavascriptInterface
-        public void setUserId(String userTag) {
+        public void saveUserTag(String userTag) {
             UserSharedPreferences.saveMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_TAG, userTag);
-            startJPush();
         }
 
         @JavascriptInterface
@@ -558,20 +470,6 @@ public class H5Activity extends BasicActivity {
         @JavascriptInterface
         public void saveUserMsg(String userMsg) {
             UserSharedPreferences.saveMsg(H5Activity.this, UserSharedPreferences.SPHelp.USER_MSG, userMsg);
-        }
-
-        @JavascriptInterface
-        public void savePushAlias(String pushAlias) {
-            //Toast.makeText(H5Activity.this,"save alias:" + pushAlias + "success",Toast.LENGTH_LONG).show();
-            UserSharedPreferences.saveMsg(H5Activity.this, UserSharedPreferences.SPHelp.PUSH_ALIAS, pushAlias);
-            PushUtils.initJPush(H5Activity.this);
-        }
-
-        @JavascriptInterface
-        public void savePushTag(String pushTag) {
-            //Toast.makeText(H5Activity.this,"save tag:" + pushTag + "success",Toast.LENGTH_LONG).show();
-            UserSharedPreferences.saveMsg(H5Activity.this, UserSharedPreferences.SPHelp.PUSH_TAG, pushTag);
-            PushUtils.initJPush(H5Activity.this);
         }
 
 
@@ -602,8 +500,7 @@ public class H5Activity extends BasicActivity {
         }
 
         @JavascriptInterface
-        public void doWXLogin(String methodName) {
-            doWXCompleteMethodName = methodName;
+        public void doWXLogin() {
             CommonUtils.doCallBackInMainThread(new Runnable() {
                 @Override
                 public void run() {
@@ -621,18 +518,6 @@ public class H5Activity extends BasicActivity {
                 }
             });
         }
-    }
-
-    private void doJSFunction(final String functionName, final String param){
-        if(mHandle == null ||mWebView == null){
-            return;
-        }
-        mHandle.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.loadUrl("javascript:" + functionName + "('" + param + "')");
-            }
-        },500);
     }
 
     private class MyBDLocationListener implements BDLocationListener {
@@ -685,19 +570,12 @@ public class H5Activity extends BasicActivity {
 
     @Override
     protected void onDestroy() {
+        // TODO Auto-generated method stub
         Logger.d(LOG_TAG, "onDestroy");
         super.onDestroy();
         // 取消监听函数
         if (mLocationClient != null) {
             mLocationClient.unRegisterLocationListener(mBDLocationListener);
-        }
-    }
-
-    private void startJPush() {
-        Logger.d(LOG_TAG, "startJPush");
-        startService(new Intent(this, H5Activity.class));
-        if (!CommonUtils.isBelowLOLLIPOP()) {
-            JobSchedulerManager.getJobSchedulerInstance(this).startJobScheduler();
         }
     }
 }

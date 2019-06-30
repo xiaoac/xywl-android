@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.lang.reflect.Field;
@@ -74,32 +73,15 @@ public class StatusBarUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (MIUISetStatusBarLightMode(activity.getWindow(), true)) {
                 result = 1;
-            } else if (FlymeSetStatusBarLightMode(activity, true)) {
+            } else if (FlymeSetStatusBarLightMode(activity.getWindow(), true)) {
                 result = 2;
-            } else if (Rom.isOppo()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = activity.getWindow();
-                    View decorView = window.getDecorView();
-                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-                            | WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                    window.setStatusBarColor(Color.TRANSPARENT);
-                } else {
-                    Window window = activity.getWindow();
-                    WindowManager.LayoutParams attributes = window.getAttributes();
-                    attributes.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-                    window.setAttributes(attributes);
-                }
-                result = 3;
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 activity.getWindow().getDecorView().
                         setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                                 | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                result = 4;
+                result = 3;
             }
         }
-        //Toast.makeText(activity, "result ->" + result, Toast.LENGTH_LONG).show();
         Logger.d(LOG_TAG, "statusBarLightMode -> " + result);
         return result;
     }
@@ -115,7 +97,7 @@ public class StatusBarUtils {
         if (type == 1) {
             MIUISetStatusBarLightMode(activity.getWindow(), true);
         } else if (type == 2) {
-            FlymeSetStatusBarLightMode(activity, true);
+            FlymeSetStatusBarLightMode(activity.getWindow(), true);
         } else if (type == 3) {
             activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
@@ -129,7 +111,7 @@ public class StatusBarUtils {
         if (type == 1) {
             MIUISetStatusBarLightMode(activity.getWindow(), false);
         } else if (type == 2) {
-            FlymeSetStatusBarLightMode(activity, false);
+            FlymeSetStatusBarLightMode(activity.getWindow(), false);
         } else if (type == 3) {
             activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
@@ -141,14 +123,14 @@ public class StatusBarUtils {
      * 设置状态栏图标为深色和魅族特定的文字风格
      * 可以用来判断是否为Flyme用户
      *
-     * @param activity 需要设置的窗口
-     * @param dark     是否把状态栏字体及图标颜色设置为深色
+     * @param window 需要设置的窗口
+     * @param dark   是否把状态栏字体及图标颜色设置为深色
      * @return boolean 成功执行返回true
      */
-    private static boolean FlymeSetStatusBarLightMode(Activity activity, boolean dark) {
+    private static boolean FlymeSetStatusBarLightMode(Window window, boolean dark) {
         boolean result = false;
         if (TextUtils.equals(CommonUtils.getSystem(), CommonUtils.SYS_FLYME)) {
-            StatusbarColorUtils.setStatusBarDarkIcon(activity, dark);  //参数 false 白色 true 黑色
+            StatusbarColorUtils.setStatusBarDarkIcon(window, dark);  //参数 false 白色 true 黑色
             result = true;
         }
         return result;
@@ -163,30 +145,22 @@ public class StatusBarUtils {
      */
     private static boolean MIUISetStatusBarLightMode(Window window, boolean dark) {
         boolean result = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.getDecorView().
-                    setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            result = true;
-        }else {
-            if (window != null) {
-                Class clazz = window.getClass();
-                try {
-                    int darkModeFlag = 0;
-                    Class layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
-                    Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
-                    darkModeFlag = field.getInt(layoutParams);
-                    Method extraFlagField = clazz.getMethod("setExtraFlags", int.class, int.class);
-                    if (dark) {
-                        extraFlagField.invoke(window, darkModeFlag, darkModeFlag);//状态栏透明且黑色字体
-                    } else {
-                        extraFlagField.invoke(window, 0, darkModeFlag);//清除黑色字体
-                    }
-                    result = true;
-                } catch (Exception e) {
-
+        if (window != null) {
+            Class clazz = window.getClass();
+            try {
+                int darkModeFlag = 0;
+                Class layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
+                Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
+                darkModeFlag = field.getInt(layoutParams);
+                Method extraFlagField = clazz.getMethod("setExtraFlags", int.class, int.class);
+                if (dark) {
+                    extraFlagField.invoke(window, darkModeFlag, darkModeFlag);//状态栏透明且黑色字体
+                } else {
+                    extraFlagField.invoke(window, 0, darkModeFlag);//清除黑色字体
                 }
+                result = true;
+            } catch (Exception e) {
+
             }
         }
         return result;

@@ -19,7 +19,7 @@ public class GrayInnerService extends Service {
         startForeground(GRAY_SERVICE_ID, new Notification());
         stopForeground(true);
         stopSelf();
-        PushUtils.initJPush(this.getApplicationContext());
+        PushUtils.initTestJPush(this.getApplicationContext());
         return super.onStartCommand(intent, flags, startId);
     }
 

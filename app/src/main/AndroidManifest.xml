@@ -74,8 +74,7 @@
         <!--H5界面-->
         <activity android:name=".activity.H5Activity"
                   android:screenOrientation="portrait"
-                  android:theme="@style/Theme"
-                  android:fitsSystemWindows="true">
+                  android:theme="@style/Theme">
             <intent-filter>
                 <action android:name="com.nandasoftits.xingyi.activity.test.H5Activity"/>
 
@@ -85,8 +84,7 @@
 
         <activity android:name=".wxapi.WXEntryActivity"
                   android:exported="true"
-                  android:theme="@style/TranslucentTheme"
-                  android:launchMode="singleInstance"/>
+                  android:theme="@style/TranslucentTheme"/>
 
         <activity android:name=".activity.WeChatActivity"
                   android:exported="true"

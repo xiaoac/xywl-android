@@ -39,10 +39,6 @@ public class UserSharedPreferences {
         public static final String USER_MSG = "USER_MSG";
 
         public static final String IS_FIRST = "IS_FIRST";
-
-        public static final String PUSH_TAG = "PUSH_TAG";
-
-        public static final String PUSH_ALIAS = "PUSH_ALIAS";
     }
 
 }

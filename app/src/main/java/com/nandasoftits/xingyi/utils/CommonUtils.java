@@ -78,6 +78,7 @@ public class CommonUtils {
         return (int) (pxValue / scale + 0.5f);
     }
 
+    //TODO
     public static void openStart(Context context) {
         if (Build.VERSION.SDK_INT < 23) {
             return;
@@ -149,13 +150,10 @@ public class CommonUtils {
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
             if (mNetworkInfo != null) {
-                Logger.d(LOG_TAG,"isNetworkConnected 1 return " + mNetworkInfo.isAvailable());
                 return mNetworkInfo.isAvailable();
             }
         }
-        Logger.d(LOG_TAG,"isNetworkConnected 2 return true");
-        //TODO return false,原逻辑为return false，但是目前有问题。先这样处理
-        return true;
+        return false;
     }
 
     public static String getAppVersionName(Context context) {

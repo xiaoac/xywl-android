@@ -41,12 +41,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="开启地图测试"/>
-            <Button
-                    android:id="@+id/push_test_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="添加推送测试数据"/>
-
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

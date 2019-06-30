@@ -76,7 +76,6 @@ public class WelcomeActivity extends BasicActivity {
                         public void run() {
                             initWX();
                             ActivityJumpHelper.goLoginActivity(WelcomeActivity.this);
-//                            ActivityJumpHelper.goH5Activity(WelcomeActivity.this,Constant.DEV_PATH_URL);
                             finish();
                         }
                     }, 2000);
@@ -85,6 +84,8 @@ public class WelcomeActivity extends BasicActivity {
                 @Override
                 public void onFailed(String str) {
                     Logger.d(LOG_TAG, "onFailed -> " + str);
+                    Logger.d(LOG_TAG, "实际无法连接网络。");
+                    //TODO
                     //这边可以通过监听jpush的广播来实时获取网络状态
                     startErrPage();
                 }

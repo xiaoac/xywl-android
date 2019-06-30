@@ -424,8 +424,8 @@ public class MapPicker implements BDLocationListener, OnGetGeoCoderResultListene
         mLocationLatLng = latLng;
 
         mBaiduMap.clear();
-        //mBaiduMap.addOverlay(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory
-        //        .fromResource(R.mipmap.icon_marka)));
+        mBaiduMap.addOverlay(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory
+                .fromResource(R.mipmap.icon_marka)));
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(latLng));
 
     }

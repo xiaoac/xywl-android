@@ -16,7 +16,7 @@ public class ImgUtils {
     private static final String LOG_TAG = "ImgUtils";
 
     public static Bitmap bitmapCompress(Bitmap bitmap) {
-        if (bitmap.getByteCount() / 1024 / 1024 < 100000) {
+        if (bitmap.getByteCount() / 1024 / 1024 < 10) {
             Logger.d(LOG_TAG, "压缩后图片的大小" + (bitmap.getByteCount() / 1024 / 1024)
                     + "M宽度为" + bitmap.getWidth() + "高度为" + bitmap.getHeight()
                     + "bytes.length=  " + (bitmap.getByteCount() / 1024 / 1024) + "KB");

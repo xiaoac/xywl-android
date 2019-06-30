@@ -2,7 +2,6 @@ package com.nandasoftits.xingyi.activity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,7 +9,6 @@ import android.widget.Toast;
 import com.nandasoftits.xingyi.R;
 import com.nandasoftits.xingyi.sharedperferences.UserSharedPreferences;
 import com.nandasoftits.xingyi.utils.ActivityJumpHelper;
-import com.nandasoftits.xingyi.utils.PushUtils;
 import com.nandasoftits.xingyi.view.MapPicker;
 
 public class LoginActivity extends BasicActivity {
@@ -18,8 +16,6 @@ public class LoginActivity extends BasicActivity {
     private EditText mTestPathEdit;
 
     private Button mGoBtn;
-
-    private Button mPushTestBtn;
 
     private View mLocationSelect;
 
@@ -76,22 +72,6 @@ public class LoginActivity extends BasicActivity {
                 finish();
             }
         });
-
-
-        //推送测试数据写入
-        mPushTestBtn = findViewById(R.id.push_test_info);
-        mPushTestBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserSharedPreferences.saveMsg(LoginActivity.this, UserSharedPreferences.SPHelp.PUSH_ALIAS, "xy_test_alias");
-                UserSharedPreferences.saveMsg(LoginActivity.this, UserSharedPreferences.SPHelp.PUSH_TAG, "xy_test_tag");
-
-                PushUtils.initJPush(LoginActivity.this);
-
-                Toast.makeText(LoginActivity.this,"success",Toast.LENGTH_LONG).show();
-            }
-        });
-
     }
 
     @Override

@@ -17,14 +17,16 @@ public class BasicActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtils.statusBarLightMode(this);
         //透明状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //透明导航栏
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        StatusBarUtils.statusBarLightMode(this);
         View statusBar = findViewById(R.id.status_bar);
         if (statusBar != null) {
             ViewGroup.LayoutParams lp = statusBar.getLayoutParams();
